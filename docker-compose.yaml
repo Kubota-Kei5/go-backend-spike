@@ -2,19 +2,25 @@ version: "3.9"
 
 services:
   web-test:
+    # depends_on:
+    #   - db-test
     build:
       context: ./spike-app
       dockerfile: ../Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      - PORT=8080
-      - GIN_MODE=debug
     volumes:
-      - ./spike-app:/app:cached
-      - go-mod-cache:/go/pkg/mod
+      - .:/spike-app
     stdin_open: true
     tty: true
 
-volumes:
-  go-mod-cache:
+  # テスト用 DB サーバー
+  # db-test:
+  #   image: postgres:14-alpine
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=spike-seed_test
+  #   volumes:
+  #     - db-test_data:/var/lib/postgresql/data
+  #   command: -p 5433
