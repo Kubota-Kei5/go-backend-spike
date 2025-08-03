@@ -1,4 +1,4 @@
-FROM golang:1.24-bookworm AS builder
+FROM golang:1.24-bookworm
 
 WORKDIR /spike-app
 
@@ -11,14 +11,17 @@ ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 
+# Install development tools
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-RUN go build -o app ./app.go
+RUN go build -o app ./main.go
 
 EXPOSE 8080
 
-CMD ["./app"]
+CMD ["/bin/bash"]
