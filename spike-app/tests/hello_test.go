@@ -6,24 +6,11 @@ import (
 	"strings"
 	"testing"
 
+	"spike-app/controllers/router"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"spike-app/controllers"
 )
-
-// Create test router with the same setup as main
-func createTestRouter() *gin.Engine {
-	gin.SetMode(gin.TestMode)
-	r := gin.Default()
-	
-	// Load HTML templates
-	r.LoadHTMLGlob("../templates/*")
-	
-	// Set up routes (same as main.go)
-	r.GET("/hello", controllers.Hello)
-	
-	return r
-}
 
 // Helper function to perform HTTP requests for testing
 func performRequest(r *gin.Engine, method, path string) *httptest.ResponseRecorder {
@@ -34,8 +21,11 @@ func performRequest(r *gin.Engine, method, path string) *httptest.ResponseRecord
 }
 
 func TestHelloEndpoint(t *testing.T) {
-	// Create test router
-	r := createTestRouter()
+	// Set Gin to test mode
+	gin.SetMode(gin.TestMode)
+	
+	// Use the SetupRouter function from router package
+	r := router.SetupRouter()
 	
 	// Perform request
 	w := performRequest(r, "GET", "/hello")
@@ -56,8 +46,11 @@ func TestHelloEndpoint(t *testing.T) {
 }
 
 func TestHelloEndpointResponseStructure(t *testing.T) {
-	// Create test router
-	r := createTestRouter()
+	// Set Gin to test mode
+	gin.SetMode(gin.TestMode)
+	
+	// Use the SetupRouter function from router package
+	r := router.SetupRouter()
 	
 	// Perform request
 	w := performRequest(r, "GET", "/hello")
