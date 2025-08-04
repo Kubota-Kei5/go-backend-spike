@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>レシピ登録フォーム</title>
+  </head>
+
+  <body>
+    <h1>レシピ登録</h1>
+
+    <form action="/recipes" method="post">
+      <label>
+        レシピ名：
+        <input type="text" name="recipe_name" required />
+      </label>
+      <br /><br />
+
+      <label>
+        調理時間（分）：
+        <input
+          type="number"
+          name="cook_time_minutes"
+          min="0"
+          step="1"
+          required
+        />
+      </label>
+      <br /><br />
+
+      <label>
+        何人分：
+        <input type="number" name="servings" min="1" step="1" required />
+      </label>
+      <br /><br />
+
+      <fieldset>
+        <legend>使う食材（名前 と g）</legend>
+
+        <div id="ingredients">
+          <label>
+            食材名：
+            <input type="text" name="ingredient_name[]" required />
+          </label>
+          <label>
+            g：
+            <input
+              type="number"
+              name="ingredient_grams[]"
+              min="0"
+              step="1"
+              required
+            />
+          </label>
+          <br /><br />
+        </div>
+
+        <button type="button" onclick="addIngredient()">＋ 食材を追加</button>
+      </fieldset>
+      <br />
+
+      <button type="submit">登録する</button>
+    </form>
+
+    <script>
+      // 食材入力行を増やす関数
+      function addIngredient() {
+        const div = document.getElementById("ingredients");
+        const line = document.createElement("div");
+        line.innerHTML = `
+        <label>
+          食材名：
+          <input type="text" name="ingredient_name[]" required>
+        </label>
+        <label>
+          g：
+          <input type="number" name="ingredient_grams[]" min="0" step="1" required>
+        </label>
+        <button type="button" onclick="this.parentNode.remove()">削除</button>
+        <br><br>
+      `;
+        div.appendChild(line);
+      }
+    </script>
+  </body>
+</html>
