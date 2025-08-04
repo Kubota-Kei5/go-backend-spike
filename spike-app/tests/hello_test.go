@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"spike-app/controllers"
+	testutil "spike-app/tests/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -20,11 +21,10 @@ func performRequest(r *gin.Engine, method, path string) *httptest.ResponseRecord
 }
 
 func Test_helloエンドポイントに(t *testing.T) {
-	// Set Gin to test mode
 	gin.SetMode(gin.TestMode)
 
 	r := controllers.SetupRouter()
-	w := performRequest(r, "GET", "/hello")
+	w := testutil.RouterRequest(r, "GET", "/hello")
 
 	t.Run( "アクセスできる", func(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -32,7 +32,7 @@ func Test_helloエンドポイントに(t *testing.T) {
 
 	body := w.Body.String()
 
-	t.Run("bodyにHello Worldが含まれている", func(t *testing.T) {
+	t.Run("アクセスするとbodyにHello Worldが表示される", func(t *testing.T) {
 		assert.Contains(t, body, "<h1>Hello World!</h1>")
 	})
 
