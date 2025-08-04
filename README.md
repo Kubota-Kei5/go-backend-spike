@@ -20,3 +20,27 @@ Nutraze のバックエンドを Go にリプレイスするための技術検�
 - Cloud SQL で db デプロイ
 - 現状の TS で実装している栄養価計算を見ながら gin にリプレイスしてみる（ダミーデータを使って testify でテスト）
 - gRPC を使った並列実装に変更（ダミーデータを使って testify でテスト）
+
+## SETUP と動作確認
+
+### Docker ビルドの実行
+
+```bash
+docker compose build web-test
+```
+
+## TEST
+
+### コンテナのシェルに入る
+
+```bash
+docker compose run --rm web-test bash
+```
+
+### テストの実行
+
+```bash
+go test ./tests/ -v
+```
+
+※ `-v` オプションで詳細なテスト結果が見られる
