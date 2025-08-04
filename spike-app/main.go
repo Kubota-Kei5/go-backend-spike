@@ -1,9 +1,9 @@
 package main
 
 import (
-	"spike-app/router"
+	"spike-app/controllers"
 )
 
 func main() {
-	router.SetupRouter().Run(":8080")
+	controllers.SetupRouter().Run(":8080")
 }

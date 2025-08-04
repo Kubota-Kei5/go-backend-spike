@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - .:/spike-app
+      - ./spike-app:/app
     stdin_open: true
     tty: true
 

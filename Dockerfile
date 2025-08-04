@@ -1,6 +1,6 @@
 FROM golang:1.24-bookworm
 
-WORKDIR /spike-app
+WORKDIR /app
 
 RUN apt-get update && \
     apt-get -y install locales wait-for-it && \
