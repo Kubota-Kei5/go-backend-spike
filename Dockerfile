@@ -1,4 +1,5 @@
-FROM golang:1.24-bookworm
+# 開発環境
+FROM golang:1.24-bookworm as dev
 
 WORKDIR /app
 
@@ -15,13 +16,21 @@ ENV TZ JST-9
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-COPY go.mod go.sum ./
+COPY spike-app/go.mod spike-app/go.sum ./
 RUN go mod download
 
-COPY . .
+COPY spike-app/ .
 
+CMD ["/bin/bash"]
+
+# 本番環境
+FROM dev AS prod
+
+COPY spike-app/go.mod spike-app/go.sum ./
+RUN go mod download
+
+COPY spike-app/ .
 RUN go build -o app ./main.go
 
 EXPOSE 8080
-
-CMD ["/bin/bash"]
+CMD ["./app"]
