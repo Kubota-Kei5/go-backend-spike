@@ -34,7 +34,7 @@ FROM builder AS build-prod
 
 COPY spike-app/ ./
 
-RUN go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 # 本番環境のイメージ
 FROM alpine:latest AS prod
