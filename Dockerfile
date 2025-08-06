@@ -1,7 +1,7 @@
-# 開発環境
-FROM golang:1.24-bookworm as dev
+# 開発用ベースイメージ
+FROM golang:1.24-bookworm as base
 
-WORKDIR /app
+WORKDIR /spike-app
 
 RUN apt-get update && \
     apt-get -y install locales wait-for-it && \
@@ -12,25 +12,28 @@ ENV LANGUAGE ja_JP:ja
 ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 
-# Install development tools
+# 本番環境の依存関係（ビルドに必要なライブラリ等）をインストール
+FROM base as builder
+
+COPY spike-app/go.mod spike-app/go.sum ./
+RUN go mod download
+
+
+# 開発環境
+FROM builder as dev
+
+# 開発用のツールをインストール
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-COPY spike-app/go.mod spike-app/go.sum ./
-RUN go mod download
-
 COPY spike-app/ .
 
-CMD ["/bin/bash"]
 
 # 本番環境
-FROM dev AS prod
+FROM builder AS prod
 
-COPY spike-app/go.mod spike-app/go.sum ./
-RUN go mod download
-
-COPY spike-app/ .
-RUN go build -o app ./main.go
+COPY spike-app/ ./
 
 EXPOSE 8080
-CMD ["./app"]
+
+CMD ["go", "run", "main.go"]

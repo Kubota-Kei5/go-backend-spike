@@ -7,8 +7,6 @@ services:
     tty: true
     ports:
       - "8080:8080"
-    volumes:
-      - .:/app
     environment:
       - PORT=8080
 
@@ -19,16 +17,15 @@ services:
       target: dev
     stdin_open: true
     tty: true
-    working_dir: /app/spike-app
     volumes:
-      - .:/app
+      - ./spike-app:/spike-app
 
   # GCP SDK
   gcloud:
     image: google/cloud-sdk:latest
     stdin_open: true
     tty: true
-    working_dir: /app
+    working_dir: /spike-app
     volumes:
-      - .:/app
+      - .:/spike-app
       - ./.gcloud-config:/root/.config/gcloud

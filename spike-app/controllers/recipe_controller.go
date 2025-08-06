@@ -11,7 +11,7 @@ func Hello(c *gin.Context) {
 }
 
 func NewRecipe(c *gin.Context) {
-	c.HTML(http.StatusOK, "new_recipe.html", gin.H{})
+	c.HTML(http.StatusOK, "new_recipes.html", gin.H{})
 }
 
 func ListRecipe(c *gin.Context) {
