@@ -6,7 +6,7 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.LoadHTMLGlob("../templates/*")
+	r.LoadHTMLGlob("templates/*")
 	r.GET("/hello", Hello)
 
 	r.GET("/recipes", ListRecipe)

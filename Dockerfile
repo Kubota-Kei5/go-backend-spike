@@ -29,11 +29,19 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 COPY spike-app/ .
 
 
-# 本番環境
-FROM builder AS prod
+# 本番環境用ビルドステージ
+FROM builder AS build-prod
 
 COPY spike-app/ ./
 
-EXPOSE 8080
+RUN go build -o main .
 
-CMD ["go", "run", "main.go"]
+# 本番環境のイメージ
+FROM alpine:latest AS prod
+RUN apk --no-cache add ca-certificates tzdata
+WORKDIR /app
+COPY --from=build-prod /spike-app/main .
+COPY --from=build-prod /spike-app/templates ./templates
+ENV PORT=8080
+EXPOSE 8080
+CMD ["./main"]
