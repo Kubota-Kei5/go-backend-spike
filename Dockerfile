@@ -28,6 +28,9 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 
 COPY spike-app/ .
 
+EXPOSE 8000
+CMD ["go", "run", "main.go"]
+
 
 # 本番環境用ビルドステージ
 FROM builder AS build-prod
