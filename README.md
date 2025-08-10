@@ -8,7 +8,7 @@ Nutraze のバックエンドを Go にリプレイスするための技術検�
 | ---------------- | -------------------------- | -------------------------------- |
 | レシピの栄養計算 | RESTfulAPI で 1 つずつ実行 | gRPC で並列実行                  |
 | API              | Next.js (API Routes)       | gin                              |
-| ORM              | Prisma                     | GORM                             |
+| ORM              | Prisma                     | GORM + golang-migrate            |
 | Testing          |                            | testify                          |
 | デプロイ         | すべて Vercel              | Backend: CloudRun, DB: Cloud SQL |
 
