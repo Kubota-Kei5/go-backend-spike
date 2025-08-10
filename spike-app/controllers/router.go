@@ -24,6 +24,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/recipes", ListRecipe)
 	r.GET("/recipes/new", NewRecipe)
 	r.POST("/recipes/new", TestCreateRecipe)
+	r.GET("/recipes/:id", GetRecipe)
 	// r.POST("/recipes/new", CreateRecipe)
 
 	return r

@@ -33,3 +33,13 @@ func TestCreateRecipe(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, testCreatedRecipe)
 }
+
+func GetRecipe(c *gin.Context) {
+	id := c.Param("id")
+	var recipe models.Recipe
+	if err := models.GetRecipeByID(id, &recipe); err != nil {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+	c.JSON(http.StatusOK, recipe)
+}

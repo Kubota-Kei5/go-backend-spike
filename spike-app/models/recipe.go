@@ -79,3 +79,9 @@ func (r *Recipe) Delete() error {
 	return nil
 }
 
+func GetRecipeByID(id string, recipe *Recipe) error {
+	if err := db.First(&recipe, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
