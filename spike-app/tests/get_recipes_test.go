@@ -16,7 +16,7 @@ func Test_recipeエンドポイントに(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	r := controllers.SetupRouter()
-	w := testutil.RouterRequest(r, "GET", "/recipes")
+	w := testutil.RouterRequest(r, "GET", "/recipes", "")
 
 	t.Run("アクセスできる", func(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
