@@ -1,5 +1,13 @@
 package models
 
+import "gorm.io/gorm"
+
+var db *gorm.DB
+
+func SetDB(database *gorm.DB) {
+	db = database
+}
+
 type Recipe struct {
 	ID            uint   `gorm:"primaryKey"`
 	Title         string `gorm:"not null"`
@@ -46,6 +54,28 @@ type RecipeIngredient struct {
 	IngredientID uint    `gorm:"not null"`
 	Quantity     float64 `gorm:"not null"`
 
-	Recipe		Recipe   `gorm:"foreignKey:RecipeID";references:ID;constraint:OnDelete:CASCADE"`
-	Ingredient	Ingredients `gorm:"foreignKey:IngredientID";references:ID;constraint:OnDelete:RESTRICT"`
+	Recipe		Recipe   `gorm:"foreignKey:RecipeID;references:ID;constraint:OnDelete:CASCADE"`
+	Ingredient	Ingredients `gorm:"foreignKey:IngredientID;references:ID;constraint:OnDelete:RESTRICT"`
 }
+
+func (r *Recipe) Create() (*Recipe, error) {
+	if err := db.Create(&r).Error; err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func (r *Recipe) Save() (*Recipe, error) {
+	if err := db.Save(&r).Error; err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func (r *Recipe) Delete() error {
+	if err := db.Where("id = ?", r.ID).Delete(&r).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
