@@ -70,6 +70,15 @@ services:
       - .:/spike-app
       - ./.gcloud-config:/root/.config/gcloud
 
+  # cloud sql proxy
+  cloud-sql:
+    image: gcr.io/cloudsql-docker/gce-proxy:latest
+    volumes:
+      - ./.spike-app-db-client-credential.json:/config
+    ports:
+      - "5432:5432"
+    command: /cloud_sql_proxy -instances=spike-backend-gin:asia-northeast1:spike-app=tcp:0.0.0.0:5432 -credential_file=/config
+
 volumes:
   db-dev-data:
   db-prod-data:
