@@ -9,10 +9,10 @@ func SetDB(database *gorm.DB) {
 }
 
 type Recipe struct {
-	ID            uint   `gorm:"primaryKey"`
-	Title         string `gorm:"not null"`
-	Servings      int    `gorm:"not null"`
-	CookingTime   int    `gorm:"not null"`
+	ID            uint   `gorm:"primaryKey" json:"ID"`
+	Title         string `gorm:"not null" json:"Title"`
+	Servings      int    `gorm:"not null" json:"Servings"`
+	CookingTime   int    `gorm:"not null" json:"CookingTime"`
 }
 
 type Ingredients struct {

@@ -23,6 +23,9 @@ func Test_recipeエンドポイントに(t *testing.T) {
 
 	models.SetDB(db)
 
+	db.Exec("DELETE FROM recipes")
+	db.Exec("ALTER SEQUENCE recipes_id_seq RESTART WITH 1")
+
 	r := controllers.SetupRouter()
 
 	t.Run("アクセスできる", func(t *testing.T) {
@@ -40,19 +43,21 @@ func Test_recipeエンドポイントに(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "レシピ一覧")
 	})
 	testRecipe1 := `{"Title": "Test Recipe1", "Servings": 4, "CookingTime": 30}`
-	// testRecipe2 := `{"Title": "Test Recipe2", "Servings": 1, "CookingTime": 10}`
-	t.Run("postしたrecipe一覧が表示される", func(t *testing.T) {
+	testRecipe2 := `{"Title": "Test Recipe2", "Servings": 1, "CookingTime": 10}`
+	t.Run("postした複数のrecipe一覧が表示される", func(t *testing.T) {
 		testutil.RouterJSONRequest(r, "POST", "/recipes/new", testRecipe1)
-		// testutil.RouterJSONRequest(r, "POST", "/recipes", testRecipe2)
+		testutil.RouterJSONRequest(r, "POST", "/recipes/new", testRecipe2)
 		w := testutil.RouterRequest(r, "GET", "/recipes", "")
 		assert.Equal(t, http.StatusOK, w.Code)
+		
 		assert.Contains(t, w.Body.String(), "Test Recipe1")
 		assert.Contains(t, w.Body.String(), "4")
 		assert.Contains(t, w.Body.String(), "30")
+		assert.Contains(t, w.Body.String(), "Test Recipe2")
+		assert.Contains(t, w.Body.String(), "1")
+		assert.Contains(t, w.Body.String(), "10")
 
-		// assert.Contains(t, w.Body.String(), "Test Recipe2")
-		// assert.Contains(t, w.Body.String(), "1")
-		// assert.Contains(t, w.Body.String(), "10")
+		println(w.Body.String())
 	})
 }
 
@@ -65,6 +70,10 @@ func Test_recipes_newエンドポイントに(t *testing.T) {
 	}
 
 	models.SetDB(db)
+
+	// テーブルをクリーンアップして独立性を確保
+	db.Exec("DELETE FROM recipes")
+	db.Exec("ALTER SEQUENCE recipes_id_seq RESTART WITH 1")
 
 	r := controllers.SetupRouter()
 
@@ -85,6 +94,7 @@ func Test_recipes_newエンドポイントに(t *testing.T) {
 	})
 
 	t.Run("testRecipeをgetで取得することができる", func(t *testing.T) {
+		// 最初のテストで既にPOST済みなので、そのID=1でGETテスト
 		w := testutil.RouterRequest(r, "GET", "/recipes/1", "")
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "Test Recipe")
