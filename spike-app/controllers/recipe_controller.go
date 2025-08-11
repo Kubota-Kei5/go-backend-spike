@@ -43,8 +43,8 @@ type FormRecipeInfo struct {
 	Title                string  `form:"title" binding:"required"`
 	Servings             int     `form:"servings" binding:"required"`
 	CookingTime          int     `form:"cooking_time" binding:"required"`
-	IngredientNames      []string `form:"ingredient_names" binding:"required"`
-	IngredientQuantities []int    `form:"ingredient_quantities" binding:"required"`
+	// IngredientNames      []string `form:"ingredient_names" binding:"required"`
+	// IngredientQuantities []int    `form:"ingredient_quantities" binding:"required"`
 }
 
 func CreateRecipe(c *gin.Context) {
