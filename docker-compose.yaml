@@ -79,6 +79,21 @@ services:
       - "5432:5432"
     command: /cloud_sql_proxy -instances=spike-backend-gin:asia-northeast1:spike-app=tcp:0.0.0.0:5432 -credential_file=/config
 
+  # 本番環境接続用シェル
+  prod-shell:
+    depends_on:
+      - cloud-sql
+    build:
+      context: .
+      target: prod
+    init: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/spike-app
+    environment:
+      - DATABASE_URL=postgresql+pg8000://postgres:${PROD_DB_PASSWORD}@cloud-sql:5432/spike_prod
+
 volumes:
   db-dev-data:
   db-prod-data:
