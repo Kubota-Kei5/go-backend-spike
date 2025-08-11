@@ -79,6 +79,14 @@ func (r *Recipe) Delete() error {
 	return nil
 }
 
+func GetAllRecipes() ([]Recipe, error) {
+	var recipes []Recipe
+	if err := db.Find(&recipes).Error; err != nil {
+		return nil, err
+	}
+	return recipes, nil
+}
+
 func GetRecipeByID(id string, recipe *Recipe) error {
 	if err := db.First(&recipe, id).Error; err != nil {
 		return err
