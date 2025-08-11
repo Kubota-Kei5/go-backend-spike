@@ -8,22 +8,16 @@
   <body>
     <h1>レシピ登録</h1>
 
-    <form action="/recipes" method="post">
+    <form action="/recipes/new" method="post">
       <label>
         レシピ名：
-        <input type="text" name="recipe_name" required />
+        <input type="text" name="title" required />
       </label>
       <br /><br />
 
       <label>
         調理時間（分）：
-        <input
-          type="number"
-          name="cook_time_minutes"
-          min="0"
-          step="1"
-          required
-        />
+        <input type="number" name="cook_time" min="0" step="1" required />
       </label>
       <br /><br />
 
