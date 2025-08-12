@@ -92,6 +92,10 @@ services:
     volumes:
       - .:/spike-app
     environment:
+      - ENV=production
+      - POSTGRES_USER=${PROD_DB_USER}
+      - POSTGRES_PASSWORD=${PROD_DB_PASSWORD}
+      - POSTGRES_DB=${PROD_DB_NAME}
       - DATABASE_URL=postgresql+pg8000://postgres:${PROD_DB_PASSWORD}@cloud-sql:5432/spike_prod
 
 volumes:
