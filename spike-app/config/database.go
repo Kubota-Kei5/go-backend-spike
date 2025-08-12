@@ -18,11 +18,11 @@ func ConnectDatabase() (*gorm.DB, error) {
 	var host string
 	switch env {
 	case "production", "prod":
-		host = "db-prod"
+		host = "cloud-sql"
 	case "development", "dev":
 		host = "db-dev"
 	default:
-		host = "db-dev"
+		host = "cloud-sql"
 	}
 
 	dsn := "host=" + host + " user=" + user + " password=" + password + " dbname=" + dbname + " port=5432 sslmode=disable TimeZone=Asia/Shanghai"
