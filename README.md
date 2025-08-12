@@ -75,3 +75,55 @@ go test ./tests/ -v
 ```
 
 ※ `-v` オプションで詳細なテスト結果が見られる
+
+## マイグレーション
+
+### 開発環境マイグレーション
+
+```bash
+# 開発DBを起動
+docker compose up db-dev -d
+
+# 開発環境でマイグレーション実行
+docker compose run --rm web-dev go run main.go
+```
+
+### 本番環境マイグレーション
+
+事前に`.env`ファイルに以下を設定：
+
+```env
+PROD_DB_PASSWORD=<Cloud SQLのパスワード>
+PROD_DB_USER=postgres
+PROD_DB_NAME=spike-app-1-prod
+```
+
+マイグレーション実行：
+
+```bash
+# Cloud SQL Proxyを起動
+docker compose up cloud-sql -d
+
+# 本番環境でマイグレーション実行（環境変数は自動設定）
+docker compose run --rm prod-shell ./main
+```
+
+### マイグレーション確認
+
+ホストから以下を実行：
+
+```bash
+# テーブル一覧確認
+docker run --rm -it --net=host postgres:16 psql "host=127.0.0.1 port=5432 sslmode=disable dbname=spike-app-1-prod user=postgres" -c "\dt"
+
+# テーブル構造確認
+docker run --rm -it --net=host postgres:16 psql "host=127.0.0.1 port=5432 sslmode=disable dbname=spike-app-1-prod user=postgres" -c "\d recipes"
+```
+
+※`Password for user postgres:` を求められるため入力
+
+#### 作成されるテーブル
+
+- `recipes`: レシピ情報
+- `ingredients`: 食材情報
+- `recipe_ingredients`: レシピと食材の関連テーブル
