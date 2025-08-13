@@ -127,3 +127,45 @@ docker run --rm -it --net=host postgres:16 psql "host=127.0.0.1 port=5432 sslmod
 - `recipes`: レシピ情報
 - `ingredients`: 食材情報
 - `recipe_ingredients`: レシピと食材の関連テーブル
+
+## Cloud Run デプロイ
+
+### 事前準備
+
+`.env`ファイルに以下の設定があることを確認：
+
+```env
+# データベース設定
+PROD_DB_PASSWORD=<Cloud SQLのパスワード>
+PROD_DB_USER=postgres
+PROD_DB_NAME=spike-app-1-prod
+
+# Cloud Run デプロイ設定
+PROJECT_NAME=spike-backend-gin
+SERVICE_NAME=spike-app
+REGION=asia-northeast1
+```
+
+### デプロイ実行
+
+```bash
+# Cloud Run に自動デプロイ
+./scripts/deploy.sh
+```
+
+このスクリプトは以下を自動実行します：
+
+1. **Docker イメージビルド**: 本番用イメージを作成
+2. **Container Registry プッシュ**: GCR にイメージをアップロード  
+3. **Cloud Run デプロイ**: サービスを更新
+4. **デプロイ確認**: サービスURLを表示
+
+### デプロイ確認
+
+```bash
+# サービス一覧確認
+docker compose run --rm gcloud gcloud run services list
+
+# 特定サービス詳細確認  
+docker compose run --rm gcloud gcloud run services describe spike-app --region=asia-northeast1
+```
