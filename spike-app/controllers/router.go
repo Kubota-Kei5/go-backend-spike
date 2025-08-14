@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,25 @@ func getTemplatePath() string {
 }
 
 func SetupRouter() *gin.Engine {
-	r := gin.Default()
+	r := gin.New()  // Use gin.New() instead of gin.Default()
+	
+	// Custom recovery middleware
+	r.Use(func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("PANIC: %v", r)
+				c.JSON(500, gin.H{"error": "Internal Server Error", "detail": r})
+				c.Abort()
+			}
+		}()
+		c.Next()
+	})
+
+	// Debug middleware
+	r.Use(func(c *gin.Context) {
+		log.Printf("Request: %s %s", c.Request.Method, c.Request.URL.Path)
+		c.Next()
+	})
 
 	r.LoadHTMLGlob(getTemplatePath())
 	r.GET("/hello", Hello)
