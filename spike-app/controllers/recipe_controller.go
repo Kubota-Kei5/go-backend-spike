@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"spike-app/models"
 
@@ -16,11 +17,14 @@ func NewRecipe(c *gin.Context) {
 }
 
 func ListRecipe(c *gin.Context) {
+	log.Println("ListRecipe called")
 	recipes, err := models.GetAllRecipes()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, nil)
+		log.Printf("Error getting recipes: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	log.Printf("Retrieved %d recipes", len(recipes))
 	c.HTML(http.StatusOK, "index.html", gin.H{"recipes": recipes})
 }
 
