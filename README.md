@@ -20,12 +20,12 @@ Nutraze のバックエンドを Go にリプレイスするための技術検�
 - ~~docker で db コンテナを作る~~
 - ~~gin で db へのデータ登録（フォームに入力した情報を POST）~~
 - ~~gin で db からデータ取得（db から GET してページにレンダリング）~~
-- Docker DB コンテナ + Gin データベース連携
-  理由: アプリケーションの基盤機能を先に完成させる
+- ~~ Docker DB コンテナ + Gin データベース連携 ~~
+  ~~ 理由: アプリケーションの基盤機能を先に完成させる ~~
 
-  - ローカル開発環境で DB 接続を確立
-  - CRUD 操作の実装とテスト
-  - データベーススキーマの設計確定
+  - ~~ ローカル開発環境で DB 接続を確立 ~~
+  - ~~ CRUD 操作の実装とテスト ~~
+  - ~~ データベーススキーマの設計確定 ~~
 
 - CI/CD 構築 - 自動テスト
   理由: コード品質を保証する仕組みを早期構築
@@ -156,9 +156,9 @@ REGION=asia-northeast1
 このスクリプトは以下を自動実行します：
 
 1. **Docker イメージビルド**: 本番用イメージを作成
-2. **Container Registry プッシュ**: GCR にイメージをアップロード  
+2. **Container Registry プッシュ**: GCR にイメージをアップロード
 3. **Cloud Run デプロイ**: サービスを更新
-4. **デプロイ確認**: サービスURLを表示
+4. **デプロイ確認**: サービス URL を表示
 
 ### デプロイ確認
 
@@ -166,6 +166,6 @@ REGION=asia-northeast1
 # サービス一覧確認
 docker compose run --rm gcloud gcloud run services list
 
-# 特定サービス詳細確認  
+# 特定サービス詳細確認
 docker compose run --rm gcloud gcloud run services describe spike-app --region=asia-northeast1
 ```
