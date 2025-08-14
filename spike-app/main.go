@@ -5,6 +5,7 @@ import (
 	"os"
 	"spike-app/config"
 	"spike-app/controllers"
+	"spike-app/models"
 )
 
 func main() {
@@ -12,6 +13,9 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect database:", err)
 	}
+
+	// Set database instance in models package
+	models.SetDB(db)
 
 	sqlDB, err := db.DB()
 	if err != nil {
