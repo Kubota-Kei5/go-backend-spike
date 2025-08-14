@@ -14,9 +14,9 @@ func ConnectDatabase() (*gorm.DB, error) {
 	password := os.Getenv("POSTGRES_PASSWORD")
 	dbname := os.Getenv("POSTGRES_DB")
 	env := os.Getenv("ENV")
-	
+
 	var dsn string
-	
+
 	// Cloud Run環境では DATABASE_URL を優先使用
 	if databaseURL := os.Getenv("DATABASE_URL"); databaseURL != "" && (env == "production" || env == "prod") {
 		dsn = databaseURL

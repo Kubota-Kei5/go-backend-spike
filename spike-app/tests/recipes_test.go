@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func Test_recipeエンドポイントに(t *testing.T) {
 	// Set Gin to test mode
 	gin.SetMode(gin.TestMode)
@@ -49,7 +48,7 @@ func Test_recipeエンドポイントに(t *testing.T) {
 		testutil.RouterJSONRequest(r, "POST", "/recipes/new", testRecipe2)
 		w := testutil.RouterRequest(r, "GET", "/recipes", "")
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		assert.Contains(t, w.Body.String(), "Test Recipe1")
 		assert.Contains(t, w.Body.String(), "4")
 		assert.Contains(t, w.Body.String(), "30")

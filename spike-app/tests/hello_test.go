@@ -26,7 +26,7 @@ func Test_helloエンドポイントに(t *testing.T) {
 	r := controllers.SetupRouter()
 	w := testutil.RouterRequest(r, "GET", "/hello", "")
 
-	t.Run( "アクセスできる", func(t *testing.T) {
+	t.Run("アクセスできる", func(t *testing.T) {
 		assert.Equal(t, http.StatusOK, w.Code)
 	})
 
