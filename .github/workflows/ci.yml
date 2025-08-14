@@ -26,12 +26,10 @@ jobs:
           - 5432:5432
 
     env:
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_USER: testuser
-      DB_PASSWORD: testpass
-      DB_NAME: testdb
-      DB_SSLMODE: disable
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+      ENV: test
 
     defaults:
       run:
