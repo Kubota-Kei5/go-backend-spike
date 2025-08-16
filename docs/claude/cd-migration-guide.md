@@ -206,7 +206,32 @@ gcloud iam service-accounts keys create key.json \
 GitHubリポジトリの Settings > Secrets and variables > Actions で以下のSecretsを設定：
 
 #### 必須Secrets
-- `GCP_PROJECT_ID`: Google CloudプロジェクトID
+
+##### `GCP_PROJECT_ID`: Google CloudプロジェクトID
+**説明**: Google Cloud Platform の プロジェクト識別子（全世界でユニークな文字列）
+
+**確認方法**:
+1. **Google Cloud Console**
+   - https://console.cloud.google.com/ にアクセス
+   - 画面上部のプロジェクト選択ドロップダウンをクリック
+   - プロジェクト名の下に表示される**ID**がプロジェクトID
+
+2. **gcloudコマンド**
+   ```bash
+   # 現在設定されているプロジェクトID
+   gcloud config get-value project
+   
+   # 利用可能なプロジェクト一覧
+   gcloud projects list
+   ```
+
+3. **既存設定から推測**
+   - `scripts/deploy.sh` の `PROJECT_NAME` 変数（デフォルト: `spike-backend-gin`）
+   - `.env` ファイルの `PROJECT_NAME`
+
+**設定例**: `spike-backend-gin`
+
+##### その他の必須Secrets
 - `GCP_SA_KEY`: サービスアカウントキー（JSON形式）
 - `PROD_DB_USER`: 本番DB用ユーザー名
 - `PROD_DB_PASSWORD`: 本番DB用パスワード
@@ -555,28 +580,62 @@ gcloud run services update spike-app \
 
 ### よくある問題と解決方法
 
-#### 1. 認証エラー
+#### 1. プロジェクトID未設定エラー
+**エラー**: 
+```
+ERROR: (gcloud.builds.submit) The required property [project] is not currently set.
+gcr.io//spike-app (二重スラッシュ)
+```
+
+**原因**: 
+- `GCP_PROJECT_ID` GitHub Secretが空または未設定
+- IMAGE_TAGで`gcr.io//image-name`のように二重スラッシュになる
+
+**解決方法**:
+1. **GitHub Secretsの確認**
+   ```
+   Settings > Secrets and variables > Actions
+   Secret名: GCP_PROJECT_ID
+   値: spike-backend-gin (または正しいプロジェクトID)
+   ```
+
+2. **プロジェクトIDの確認**
+   ```bash
+   # Google Cloud Consoleまたは
+   gcloud config get-value project
+   gcloud projects list
+   ```
+
+3. **cd.yamlでのデバッグ**
+   ```yaml
+   - name: Debug environment
+     run: |
+       echo "GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}"
+       echo "IMAGE_TAG: ${{ env.IMAGE_TAG }}"
+   ```
+
+#### 2. 認証エラー
 **エラー**: `Error: (gcloud.auth.activate-service-account) Could not read json file`
 
 **解決方法**:
 - GitHub SecretsのGCP_SA_KEYが正しく設定されているか確認
 - サービスアカウントキーのJSON形式が正しいか確認
 
-#### 2. 権限エラー
+#### 3. 権限エラー
 **エラー**: `Permission denied`
 
 **解決方法**:
 - サービスアカウントに必要な権限が付与されているか確認
 - Cloud Build、Cloud Run、Storage Admin権限を確認
 
-#### 3. タイムアウトエラー
+#### 4. タイムアウトエラー
 **エラー**: `Build timed out`
 
 **解決方法**:
 - ビルド時間の調整（600s → 900s等）
 - Dockerイメージサイズの最適化検討
 
-#### 4. Cloud SQL接続エラー
+#### 5. Cloud SQL接続エラー
 **エラー**: `Could not connect to Cloud SQL`
 
 **解決方法**:
