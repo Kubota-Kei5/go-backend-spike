@@ -1,4 +1,4 @@
-name: Testing CI
+name: CI
 
 on:
   push:
@@ -9,6 +9,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+      ENV: test
 
     defaults:
       run:
@@ -39,5 +60,5 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
-      - name: Run tests (unit tests only)
-        run: go test -v ./tests/hello_test.go
+      - name: Run all tests (including DB integration tests)
+        run: go test -v ./tests/...

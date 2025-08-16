@@ -28,6 +28,8 @@ func ConnectDatabase() (*gorm.DB, error) {
 			host = "cloud-sql"
 		case "development", "dev":
 			host = "db-dev"
+		case "test", "ci":
+			host = "localhost"
 		default:
 			host = "cloud-sql"
 		}
