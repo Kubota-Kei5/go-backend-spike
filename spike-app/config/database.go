@@ -21,7 +21,6 @@ func ConnectDatabase() (*gorm.DB, error) {
 	if databaseURL := os.Getenv("DATABASE_URL"); databaseURL != "" && (env == "production" || env == "prod") {
 		dsn = databaseURL
 	} else {
-		// ローカル開発環境用の設定
 		var host string
 		switch env {
 		case "production", "prod":
