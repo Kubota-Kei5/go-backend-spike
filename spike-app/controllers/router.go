@@ -17,7 +17,7 @@ func getTemplatePath() string {
 }
 
 func SetupRouter() *gin.Engine {
-	r := gin.New() // Use gin.New() instead of gin.Default()
+	r := gin.New()
 
 	// Custom recovery middleware
 	r.Use(func(c *gin.Context) {
