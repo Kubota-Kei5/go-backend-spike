@@ -48,7 +48,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           echo "Building image: ${{ env.IMAGE_TAG }}"
-          timeout 600s gcloud builds submit --tag ${{ env.IMAGE_TAG }} --project ${{ secrets.GCP_PROJECT_ID }}
+          timeout 600s gcloud builds submit --tag ${{ env.IMAGE_TAG }} --project ${{ secrets.GCP_PROJECT_ID }} --service-account=github-actions-cd@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
 
       - name: Create secure environment variables file
         run: |
