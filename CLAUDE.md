@@ -113,6 +113,127 @@ docker compose run --rm gcloud gcloud run services describe spike-app --region=a
 - `PROD_DB_USER`, `PROD_DB_PASSWORD`, `PROD_DB_NAME`: 個別の DB コンポーネント
 - `CLOUD_SQL_CONNECTION_NAME`: GCP Cloud SQL インスタンス識別子
 
+## CI/CD パイプライン
+
+### CI (Continuous Integration)
+**トリガー条件：**
+- mainブランチとdevelopブランチへのpush
+- mainブランチとdevelopブランチへのプルリクエスト
+
+**実行内容：**
+1. **環境準備**
+   - Ubuntu最新版でジョブ実行
+   - PostgreSQL 16サービス起動（テスト用DB）
+   - Go 1.24セットアップとモジュールキャッシュ
+
+2. **静的解析**
+   - `go fmt`でコードフォーマットチェック
+   - `go vet`で静的解析実行
+
+3. **テスト実行**
+   - 依存関係インストール（`go mod download`）
+   - データベース統合テストを含む全テスト実行（`go test -v ./tests/...`）
+
+### CD (Continuous Deployment)
+**トリガー条件：**
+- mainブランチへのpush時
+- 手動実行（`workflow_dispatch`）
+- CIワークフロー成功後の自動実行
+
+**実行フロー：**
+
+1. **認証・環境準備**
+   - GCPサービスアカウント認証
+   - gcloud CLI設定とDocker認証
+   - 環境変数設定（プロジェクト名、サービス名、リージョン等）
+
+2. **Cloud SQL デプロイ**
+   - インスタンス存在確認（`gcloud sql instances describe`）
+   - 存在しない場合：PostgreSQL 16インスタンス自動作成
+     - データベース版：POSTGRES_16
+     - マシンタイプ：db-f1-micro
+     - リージョン：asia-northeast1
+     - バックアップ：毎日3:00AM
+     - メンテナンス：日曜4:00AM
+   - rootパスワード設定
+   - 専用DBユーザー作成（存在しない場合）
+   - アプリケーション用データベース作成（存在しない場合）
+
+3. **アプリケーションデプロイ**
+   - Dockerイメージビルド（本番用マルチステージビルド）
+   - Google Container Registryへプッシュ（`gcr.io/{project}/{service}:{commit-sha}`）
+   - Cloud Runサービスデプロイ
+     - Cloud SQLインスタンス接続設定
+     - 本番環境変数注入
+     - タイムアウト300秒設定
+
+4. **デプロイ確認**
+   - サービスURL取得
+   - GitHub Actions サマリー生成
+   - デプロイ結果表示
+
+#### 必要なGitHub Secrets
+| Secret名 | 説明 | 例 |
+|----------|------|-----|
+| `GCP_SA_KEY` | Google Cloud サービスアカウントキー（JSON形式） | `{"type": "service_account", ...}` |
+| `GCP_PROJECT_ID` | GCPプロジェクトID | `spike-backend-gin` |
+| `PROD_DB_USER` | 本番データベースユーザー名 | `spike_user` |
+| `PROD_DB_PASSWORD` | 本番データベースパスワード | `secure_password_123` |
+| `PROD_DB_NAME` | 本番データベース名 | `spike_prod` |
+| `INSTANCE_CONNECTION_NAME` | Cloud SQL接続名 | `spike-backend-gin:asia-northeast1:spike-app` |
+| `DATABASE_URL` | 完全なPostgreSQL接続文字列 | `postgresql://user:pass@host/dbname` |
+| `PROJECT_NAME` | プロジェクト名（オプション） | `spike-backend-gin` |
+| `SERVICE_NAME` | Cloud Runサービス名（オプション） | `spike-app` |
+| `REGION` | デプロイリージョン（オプション） | `asia-northeast1` |
+
+#### 必要なサービスアカウント権限
+Google Cloudでサービスアカウントに以下のロールを付与：
+
+| ロール名 | 用途 |
+|----------|------|
+| `Cloud SQL Admin` | Cloud SQLインスタンス、データベース、ユーザーの作成・管理 |
+| `Cloud Run Admin` | Cloud Runサービスのデプロイと管理 |
+| `Cloud Build Editor` | Dockerイメージのビルド |
+| `Storage Admin` | Container Registryへのイメージプッシュ |
+
+#### セットアップ手順
+
+1. **GCPサービスアカウント作成**
+   ```bash
+   # サービスアカウント作成
+   gcloud iam service-accounts create github-actions-sa \
+     --description="GitHub Actions CD pipeline" \
+     --display-name="GitHub Actions SA"
+   
+   # 権限付与
+   gcloud projects add-iam-policy-binding PROJECT_ID \
+     --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/cloudsql.admin"
+   
+   gcloud projects add-iam-policy-binding PROJECT_ID \
+     --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/run.admin"
+   
+   gcloud projects add-iam-policy-binding PROJECT_ID \
+     --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/cloudbuild.builds.editor"
+   
+   gcloud projects add-iam-policy-binding PROJECT_ID \
+     --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/storage.admin"
+   
+   # キー生成
+   gcloud iam service-accounts keys create key.json \
+     --iam-account=github-actions-sa@PROJECT_ID.iam.gserviceaccount.com
+   ```
+
+2. **GitHub Secrets設定**
+   - リポジトリの Settings > Secrets and variables > Actions
+   - 上記表の各Secretを設定
+
+3. **デプロイテスト**
+   - mainブランチにpushしてCDパイプライン動作確認
+
 ## テスト戦略
 
 - **統合テスト**: CI で PostgreSQL に対してデータベーステストを実行
