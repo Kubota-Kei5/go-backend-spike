@@ -45,17 +45,17 @@ func TestCreateRecipe(c *gin.Context) {
 
 func CreateRecipe(c *gin.Context) {
 	var recipe models.Recipe
-	if err := c.ShouldBindJSON(&recipe); err != nil {
+	if err := c.ShouldBind(&recipe); err != nil {
 		c.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
-	createdRecipe, err := recipe.Create()
+	_, err := recipe.Create()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-	c.JSON(http.StatusOK, createdRecipe)
+	c.Redirect(http.StatusSeeOther, "/recipes/")
 }
 
 func GetRecipe(c *gin.Context) {
