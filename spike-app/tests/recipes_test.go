@@ -78,9 +78,10 @@ func Test_recipes_newエンドポイントに(t *testing.T) {
 
 	testRecipe := `{"Title": "Test Recipe", "Servings": 4, "CookingTime": 30}`
 
-	t.Run("testRecipeをpostすると200が返ってくる", func(t *testing.T) {
+	t.Run("testRecipeをpostすると/recipesにリダイレクトされる", func(t *testing.T) {
 		w := testutil.RouterJSONRequest(r, "POST", "/recipes/new", testRecipe)
-		assert.Equal(t, http.StatusOK, w.Code)
+		assert.Equal(t, http.StatusSeeOther, w.Code)
+		assert.Equal(t, "/recipes/", w.Header().Get("Location"))
 	})
 	t.Run("testRecipeをpostするとDBにレシピが保存される", func(t *testing.T) {
 		var recipe models.Recipe
@@ -93,7 +94,6 @@ func Test_recipes_newエンドポイントに(t *testing.T) {
 	})
 
 	t.Run("testRecipeをgetで取得することができる", func(t *testing.T) {
-		// 最初のテストで既にPOST済みなので、そのID=1でGETテスト
 		w := testutil.RouterRequest(r, "GET", "/recipes/1", "")
 		assert.Equal(t, http.StatusOK, w.Code)
 		assert.Contains(t, w.Body.String(), "Test Recipe")
