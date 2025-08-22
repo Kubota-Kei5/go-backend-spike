@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-  #   branches: [main]
+    branches: [main]
   workflow_dispatch: # 手動実行も可能
   workflow_run:
     workflows: ["CI"]
@@ -48,55 +48,6 @@ jobs:
           echo "REGION=${{ secrets.REGION || 'asia-northeast1' }}" >> $GITHUB_ENV
           echo "CLOUD_SQL_INSTANCE=spike-app" >> $GITHUB_ENV
           echo "IMAGE_TAG=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.SERVICE_NAME || 'spike-app' }}:${{ github.sha }}" >> $GITHUB_ENV
-
-      # - name: Check if Cloud SQL instance exists
-      #   id: check-instance
-      #   run: |
-      #     if gcloud sql instances describe ${{ env.CLOUD_SQL_INSTANCE }} --quiet 2>/dev/null; then
-      #       echo "instance-exists=true" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "instance-exists=false" >> $GITHUB_OUTPUT
-      #     fi
-
-      # - name: Create Cloud SQL instance (if not exists)
-      #   if: steps.check-instance.outputs.instance-exists == 'false'
-      #   run: |
-      #     gcloud sql instances create ${{ env.CLOUD_SQL_INSTANCE }} \
-      #       --database-version=POSTGRES_16 \
-      #       --tier=db-f1-micro \
-      #       --region=${{ env.REGION }} \
-      #       --authorized-networks=0.0.0.0/0 \
-      #       --backup-start-time=03:00 \
-      #       --enable-bin-log \
-      #       --maintenance-window-day=SUN \
-      #       --maintenance-window-hour=04
-
-      # - name: Wait for Cloud SQL instance to be ready
-      #   run: |
-      #     echo "Waiting for Cloud SQL instance to be ready..."
-      #     timeout 300s bash -c 'until gcloud sql instances describe ${{ env.CLOUD_SQL_INSTANCE }} --format="value(state)" | grep -q "RUNNABLE"; do sleep 10; done'
-
-      # - name: Set Cloud SQL root password
-      #   run: |
-      #     gcloud sql users set-password root \
-      #       --host=% \
-      #       --instance=${{ env.CLOUD_SQL_INSTANCE }} \
-      #       --password=${{ secrets.PROD_DB_PASSWORD }}
-
-      # - name: Create database user (if not exists)
-      #   run: |
-      #     if ! gcloud sql users list --instance=${{ env.CLOUD_SQL_INSTANCE }} --format="value(name)" | grep -q "^${{ secrets.PROD_DB_USER }}$"; then
-      #       gcloud sql users create ${{ secrets.PROD_DB_USER }} \
-      #         --instance=${{ env.CLOUD_SQL_INSTANCE }} \
-      #         --password=${{ secrets.PROD_DB_PASSWORD }}
-      #     fi
-
-      # - name: Create database (if not exists)
-      #   run: |
-      #     if ! gcloud sql databases list --instance=${{ env.CLOUD_SQL_INSTANCE }} --format="value(name)" | grep -q "^${{ secrets.PROD_DB_NAME }}$"; then
-      #       gcloud sql databases create ${{ secrets.PROD_DB_NAME }} \
-      #         --instance=${{ env.CLOUD_SQL_INSTANCE }}
-      #     fi
 
       - name: Build and push Docker image
         run: |
