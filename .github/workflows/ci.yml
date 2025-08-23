@@ -7,13 +7,13 @@ on:
     paths-ignore:
       - .github/workflows/cd.yml
       - docs/**
-      - *.md
+      - ./*.md
   push:
     branches: [main]
     paths-ignore:
       - .github/workflows/cd.yml
       - docs/**
-      - *.md
+      - ./*.md
 
 jobs:
   test:
